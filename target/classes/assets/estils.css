@@ -1,0 +1,44 @@
+/* Fondo general y fuentes limpias */
+.root, .vbox, .border-pane {
+    -fx-background-color: #F4F6F7;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Capçalera azul de títulos */
+.label {
+    -fx-text-fill: #2C3E50;
+}
+
+/* Estilos para las ListViews (Móvil y Escritorio) */
+.list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* Celdas de las listas con la línea divisoria inferior */
+.list-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 12px 15px;
+    -fx-border-color: #BDC3C7;
+    -fx-border-width: 0 0 1px 0;
+    -fx-text-fill: #34495E;
+}
+
+/* Efectos visuales cuando pasas el ratón o seleccionas un elemento */
+.list-cell:hover {
+    -fx-background-color: #ECF0F1;
+}
+.list-cell:selected {
+    -fx-background-color: #3498DB;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* El ComboBox selector de categoría en escritorio */
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #BDC3C7;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 5px;
+}
