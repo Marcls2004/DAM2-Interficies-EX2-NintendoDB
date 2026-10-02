@@ -1,22 +1,35 @@
-/* Fondo general y fuentes limpias */
+/* 
+  FONDO GENERAL DE LA APLICACIÓN:
+  Define el color de fondo gris claro limpio para las ventanas y la tipografía base.
+*/
 .root, .vbox, .border-pane {
     -fx-background-color: #F4F6F7;
     -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
-/* Capçalera azul de títulos */
+/* 
+  ESTILO GENERAL DE LOS TEXTOS:
+  Asegura que las etiquetas de texto plano tengan un tono gris oscuro/negro muy legible.
+*/
 .label {
     -fx-text-fill: #2C3E50;
 }
 
-/* Estilos para las ListViews (Móvil y Escritorio) */
+/* 
+  ESTILOS PARA LAS LISTAS (ListView):
+  Limpia los bordes internos por defecto de JavaFX y pone el fondo completamente blanco.
+*/
 .list-view {
     -fx-background-color: #FFFFFF;
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
 
-/* Celdas de las listas con la línea divisoria inferior */
+/* 
+  CELDAS INDIVIDUALES DE LAS LISTAS (ListCell):
+  Añade un padding (relleno) generoso para simular una app móvil nativa.
+  '-fx-border-width: 0 0 1px 0' dibuja ÚNICAMENTE la línea gris fina inferior de separación.
+*/
 .list-cell {
     -fx-background-color: #FFFFFF;
     -fx-padding: 12px 15px;
@@ -25,16 +38,28 @@
     -fx-text-fill: #34495E;
 }
 
-/* Efectos visuales cuando pasas el ratón o seleccionas un elemento */
+/* 
+  EFECTO AL PASAR EL RATÓN (Hover):
+  Cambia el fondo de la celda a un gris muy suave cuando el usuario posiciona el cursor encima.
+*/
 .list-cell:hover {
     -fx-background-color: #ECF0F1;
 }
+
+/* 
+  CELDA SELECCIONADA (Selected):
+  Sincronizado con tu captura: aplica un tono azul suave de selección.
+  Mantiene el texto en color oscuro para que contraste perfectamente.
+*/
 .list-cell:selected {
-    -fx-background-color: #3498DB;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #D4E6F1;
+    -fx-text-fill: #1B4F72;
 }
 
-/* El ComboBox selector de categoría en escritorio */
+/* 
+  EL DESPLEGABLE DE ESCRITORIO (ComboBox):
+  Aplica esquinas ligeramente redondeadas (4px) y un borde gris limpio a juego con las listas.
+*/
 .combo-box {
     -fx-background-color: #FFFFFF;
     -fx-border-color: #BDC3C7;

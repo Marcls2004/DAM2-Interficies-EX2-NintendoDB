@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+  IMPORTACIONES OBLIGATORIAS DE JAVAFX:
+  Le dicen al motor gráfico exactamente qué librerías nativas debe cargar para renderizar la vista.
+-->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -8,23 +12,43 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<!-- 
+  CONTENEDOR RAÍZ (VBox - Caja Vertical):
+  Apila la barra superior y la lista de elementos hacia abajo imitando una pantalla de teléfono.
+-->
 <VBox prefHeight="600.0" prefWidth="380.0" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="com.project.Controller">
    <children>
-      <!-- Barra superior estilizada y perfectamente alineada al centro vertical -->
+      
+      <!-- 
+        BARRA SUPERIOR (HBox - Caja Horizontal): 
+        Coloca el botón 'Back' y el título de forma adyacente.
+        'alignment="CENTER_LEFT"' asegura que queden perfectamente alineados en el centro vertical.
+      -->
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="15.0" style="-fx-background-color: #EAECEE; -fx-border-color: #BDC3C7; -fx-border-width: 0 0 1px 0;">
          <children>
+            <!-- Botón Back: Permite al usuario retroceder en el historial de navegación móvil (fx:id mapeado) -->
             <Button fx:id="btnBack" mnemonicParsing="false" prefHeight="30.0" text="Back" />
+            
+            <!-- Etiqueta del título con tipografía en negrita y tamaño adecuado para smartphones -->
             <Label text="Nintendo DB" textFill="#2c3e50">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
          </children>
+         <!-- Margen interior izquierdo y derecho de 15 píxeles para despegar el botón del borde de la pantalla -->
          <padding>
             <Insets left="15.0" right="15.0" />
          </padding>
       </HBox>
-      <!-- Lista móvil que aprovecha todo el espacio -->
+      
+      <!-- 
+        LISTVIEW MÓVIL (llistaElements):
+        Lista elástica que contendrá las tarjetas compactas de los personajes, juegos o consolas.
+        'VBox.vgrow="ALWAYS"' obliga a la lista a estirarse verticalmente para ocupar todo el resto 
+        del cuerpo de la pantalla de forma fluida.
+      -->
       <ListView fx:id="llistaElements" VBox.vgrow="ALWAYS" />
+      
    </children>
 </VBox>

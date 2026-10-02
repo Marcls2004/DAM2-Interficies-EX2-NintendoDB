@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+  IMPORTACIONES OBLIGATORIAS DE JAVAFX:
+  Le indican al motor gráfico de Java qué elementos de interfaz y fuentes de texto debe cargar.
+-->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -7,10 +11,23 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<!-- 
+  CONTENEDOR RAÍZ (VBox - Caja Vertical):
+  Estructura el menú de inicio para teléfonos apilando la cabecera y la lista hacia abajo.
+  Corregidos los namespaces oficiales (xmlns y xmlns:fx) con sus rutas completas obligatorias.
+-->
 <VBox prefHeight="600.0" prefWidth="380.0" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="com.project.Controller">
    <children>
+      
+      <!-- 
+        BARRA SUPERIOR (HBox - Caja Horizontal): 
+        Actúa como cabecera principal del menú móvil.
+        'alignment="CENTER"' mantiene el título perfectamente centrado tanto horizontal como verticalmente.
+        Tiene el fondo gris suave (#EAECEE) y la línea divisoria inferior gris de 1 píxel.
+      -->
       <HBox alignment="CENTER" prefHeight="50.0" style="-fx-background-color: #EAECEE; -fx-border-color: #BDC3C7; -fx-border-width: 0 0 1px 0;">
          <children>
+            <!-- Etiqueta con el nombre de la aplicación con tipografía en negrita -->
             <Label text="Nintendo DB" textFill="#2c3e50">
                <font>
                   <Font name="System Bold" size="18.0" />
@@ -18,7 +35,14 @@
             </Label>
          </children>
       </HBox>
-      <!-- Esta lista contendrá las opciones fijas: Personatges, Jocs, Consoles -->
+      
+      <!-- 
+        LISTVIEW DE CATEGORÍAS (llistaCategoriesMobil):
+        Este componente contendrá las tres opciones fijas de navegación: 'Personatges', 'Jocs' y 'Consoles'.
+        'VBox.vgrow="ALWAYS"' obliga a la lista a estirarse verticalmente para ocupar todo el resto 
+        del cuerpo de la pantalla del dispositivo móvil de forma fluida.
+      -->
       <ListView fx:id="llistaCategoriesMobil" VBox.vgrow="ALWAYS" />
+      
    </children>
 </VBox>
