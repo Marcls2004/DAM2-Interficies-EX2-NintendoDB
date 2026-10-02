@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+  IMPORTACIONES OBLIGATORIAS DE JAVAFX:
+  Permiten que el motor gráfico de Java entienda qué es un BorderPane, un ComboBox, etc.
+-->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -7,27 +11,63 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
+<!-- 
+  CONTENEDOR RAÍZ (BorderPane):
+  Divide la pantalla de escritorio de forma clásica en 5 regiones (Arriba, Abajo, Izquierda, Derecha y Centro).
+  Vincula esta interfaz visual con tu clase lógica mediante 'fx:controller'.
+-->
 <BorderPane xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="com.project.Controller">
+   
+   <!-- ZONA SUPERIOR (top): Aloja la barra de título de la aplicación -->
    <top>
-      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="40.0" style="-fx-background-color: #EAECEE;" text="Nintendo DB" textAlignment="CENTER" BorderPane.alignment="CENTER" />
+      <!-- 
+        Label del título: 
+        'maxWidth="1.7976931348623157E308"' (Double.MAX_VALUE) hace que la barra azul se estire horizontalmente 
+        hasta los extremos ocupando todo el ancho disponible automáticamente cuando agrandas la ventana.
+      -->
+      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="40.0" style="-fx-background-color: #7FB3D5;" text="Nintendo DB" textAlignment="CENTER" BorderPane.alignment="CENTER" />
    </top>
+   
+   <!-- ZONA IZQUIERDA (left): Aloja el menú de selección y navegación lateral -->
    <left>
+      <!-- 
+        VBox (Caja Vertical): Apila el desplegable y la lista uno debajo del otro.
+        'prefWidth="250.0"' le da un ancho fijo y elegante de columna lateral de escritorio.
+      -->
       <VBox prefWidth="250.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
+            <!-- ComboBox: Menú desplegable para que el usuario elija entre 'Personatges', 'Jocs' o 'Consoles' -->
             <ComboBox fx:id="selectorCategoria" maxWidth="1.7976931348623157E308" prefHeight="35.0" />
+            
+            <!-- 
+              ListView: Lista que contendrá las tarjetas de los elementos de la categoría seleccionada.
+              'VBox.vgrow="ALWAYS"' es clave: hace que la lista se estire elásticamente hacia abajo 
+              aprovechando todo el alto de la ventana del ordenador.
+            -->
             <ListView fx:id="llistaLateral" VBox.vgrow="ALWAYS" />
          </children>
+         
+         <!-- Insets: Márgenes de separación interiores de 10 píxeles para que los elementos no toquen los bordes -->
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </VBox>
    </left>
+   
+   <!-- ZONA CENTRAL (center): Aloja el panel dinámico de visualización de detalles -->
    <center>
-      <!-- Eliminados los tamaños fijos prefWidth/prefHeight para dar total flexibilidad elástica -->
+      <!-- 
+        VBox Central (zonaDetall): 
+        Contenedor elástico que se queda totalmente vacío al arrancar.
+        El código Java cargará aquí en tiempo real la foto grande, el título y la descripción del elemento clicado.
+        'alignment="CENTER"' garantiza que todo el contenido se dibuje perfectamente alineado en el centro absoluto.
+      -->
       <VBox fx:id="zonaDetall" alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
+         <!-- Relleno interior para dar aire y separación elegante entre la imagen y los textos descriptivos -->
          <padding>
             <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
          </padding>
       </VBox>
    </center>
+   
 </BorderPane>

@@ -10,21 +10,27 @@ import javafx.scene.shape.Rectangle;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
 import java.io.InputStream;
 
 public class Controller {
 
-    // Componentes de la vista de ESCRITORIO (layout.fxml)
+    // ESCRITORIO
     @FXML private ComboBox<String> selectorCategoria;
     @FXML private ListView<HBox> llistaLateral;
     @FXML private VBox zonaDetall;
 
-    // Componentes de la vista MÓVIL (vista_mobil.fxml)
+    // MÓVIL PANTALLA 1: MENÚ
+    @FXML private ListView<String> llistaCategoriesMobil;
+
+    // MÓVIL PANTALLA 2: LISTA
     @FXML private Button btnBack;
     @FXML private ListView<HBox> llistaElements;
 
-    // Estructuras de datos directas para tus listas JSON
+    // MÓVIL PANTALLA 3: DETALLE
+    @FXML private Button btnBackDetall;
+    @FXML private Label lblTitolDetallMobil;
+    @FXML private VBox zonaDetallMobil;
+
     private static JSONArray dataPersonatges;
     private static JSONArray dataJocs;
     private static JSONArray dataConsoles;
@@ -34,46 +40,53 @@ public class Controller {
     public void initialize() {
         carregarDadesJSON();
 
-        // Configuración para el entorno de ESCRITORIO
+        // 1. Configuración Escritorio
         if (selectorCategoria != null && llistaLateral != null && zonaDetall != null) {
             selectorCategoria.getItems().clear();
             selectorCategoria.getItems().addAll("Personatges", "Jocs", "Consoles");
-            
-            // Forzamos la selección inicial limpia
             selectorCategoria.getSelectionModel().selectFirst();
-            
-            // Vinculamos el cambio de categoría del ComboBox
-            selectorCategoria.setOnAction(e -> {
-                String seleccionada = selectorCategoria.getSelectionModel().getSelectedItem();
-                if (seleccionada != null) {
-                    actualitzarLlistaEscriptori(seleccionada);
-                }
-            });
-            
-            // Renderizado inicial por defecto
+            selectorCategoria.setOnAction(e -> actualitzarLlistaEscriptori(selectorCategoria.getValue()));
             actualitzarLlistaEscriptori("Personatges");
         }
 
-        // Configuración para el entorno MÓVIL
-        if (llistaElements != null) {
-            actualitzarLlistaMobil(categoriaActualMobil);
+        // 2. Configuración Pantalla 1 Móvil: Menú de Categorías
+        if (llistaCategoriesMobil != null) {
+            llistaCategoriesMobil.getItems().clear();
+            llistaCategoriesMobil.getItems().addAll("Personatges", "Jocs", "Consoles");
+            llistaCategoriesMobil.setOnMouseClicked(e -> {
+                String seleccionada = llistaCategoriesMobil.getSelectionModel().getSelectedItem();
+                if (seleccionada != null) {
+                    categoriaActualMobil = seleccionada;
+                    // Buscamos el controlador de la pantalla de la lista para forzar su refresco
+                    Controller ctrlLista = (Controller) UtilsViews.getController("MobileList");
+                    if (ctrlLista != null) ctrlLista.actualitzarLlistaMobil(seleccionada);
+                    UtilsViews.setView("MobileList");
+                }
+            });
+        }
+
+        // 3. Configuración Pantalla 2 Móvil: Lista de Elementos
+        if (btnBack != null && llistaElements != null) {
+            btnBack.setOnAction(e -> UtilsViews.setView("MobileMenu"));
+        }
+
+        // 4. Configuración Pantalla 3 Móvil: Detalle del Elemento
+        if (btnBackDetall != null) {
+            btnBackDetall.setOnAction(e -> UtilsViews.setView("MobileList"));
         }
     }
 
     private void carregarDadesJSON() {
-        if (dataPersonatges != null) return; // Evitamos lecturas duplicadas en memoria
-        
+        if (dataPersonatges != null) return;
         try (InputStream is = getClass().getResourceAsStream("/assets/characters.json")) {
             if (is != null) dataPersonatges = new JSONArray(new JSONTokener(is));
-        } catch (Exception e) { System.err.println("Error cargando characters.json"); }
-
+        } catch (Exception e) { System.err.println("Error characters.json"); }
         try (InputStream is = getClass().getResourceAsStream("/assets/games.json")) {
             if (is != null) dataJocs = new JSONArray(new JSONTokener(is));
-        } catch (Exception e) { System.err.println("Error cargando games.json"); }
-
+        } catch (Exception e) { System.err.println("Error games.json"); }
         try (InputStream is = getClass().getResourceAsStream("/assets/consoles.json")) {
             if (is != null) dataConsoles = new JSONArray(new JSONTokener(is));
-        } catch (Exception e) { System.err.println("Error cargando consoles.json"); }
+        } catch (Exception e) { System.err.println("Error consoles.json"); }
     }
 
     private JSONArray obtenirArrayPerCategoria(String categoria) {
@@ -88,150 +101,114 @@ public class Controller {
 
     private void actualitzarLlistaEscriptori(String categoria) {
         if (llistaLateral == null || zonaDetall == null) return;
-        
         llistaLateral.getItems().clear();
         zonaDetall.getChildren().clear();
 
         JSONArray array = obtenirArrayPerCategoria(categoria);
-
         for (int i = 0; i < array.length(); i++) {
-            try {
-                JSONObject obj = array.getJSONObject(i);
-                HBox fila = new HBox(10);
-                fila.setAlignment(Pos.CENTER_LEFT);
-
-                ImageView img = obtenirImatge(obj.optString("image", ""), 30, true);
-                Label nom = new Label(obj.optString("name", "Sense Nom"));
-                
-                fila.getChildren().addAll(img, nom);
-                llistaLateral.getItems().add(fila);
-
-                // Evento click para rellenar la ficha detallada
-                fila.setOnMouseClicked(e -> carregarDetallEscriptori(obj));
-            } catch (Exception e) {
-                System.err.println("Error procesando fila " + i + " de " + categoria);
-            }
+            JSONObject obj = array.getJSONObject(i);
+            HBox fila = new HBox(10);
+            fila.setAlignment(Pos.CENTER_LEFT);
+            fila.getChildren().addAll(obtenirImatge(obj.optString("image", ""), 30, true), new Label(obj.optString("name", "")));
+            llistaLateral.getItems().add(fila);
+            fila.setOnMouseClicked(e -> carregarDetallEscriptori(obj, zonaDetall));
         }
-        
-        // Autoseleccionamos el primer elemento disponible de la lista al cambiar de pestaña
         if (!llistaLateral.getItems().isEmpty()) {
-            try {
-                carregarDetallEscriptori(array.getJSONObject(0));
-                llistaLateral.getSelectionModel().select(0);
-            } catch (Exception e) {
-                // Controlado
-            }
+            carregarDetallEscriptori(array.getJSONObject(0), zonaDetall);
+            llistaLateral.getSelectionModel().select(0);
         }
     }
 
-    private void carregarDetallEscriptori(JSONObject obj) {
-        if (zonaDetall == null || obj == null) return;
-        zonaDetall.getChildren().clear();
+        public void actualitzarLlistaMobil(String categoria) {
+        if (llistaElements == null) return;
+        llistaElements.getItems().clear();
 
-        // Forzamos el centrado vertical y horizontal absoluto
-        zonaDetall.setAlignment(Pos.CENTER);
+        JSONArray array = obtenirArrayPerCategoria(categoria);
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject obj = array.getJSONObject(i);
+            HBox fila = new HBox(15);
+            fila.setAlignment(Pos.CENTER_LEFT);
+            fila.setPadding(new javafx.geometry.Insets(10, 15, 10, 15));
+            fila.getChildren().addAll(obtenirImatge(obj.optString("image", ""), 40, true), new Label(obj.optString("name", "")));
+            llistaElements.getItems().add(fila);
+            
+            fila.setOnMouseClicked(e -> {
+                // --- REGISTRO DE MEMORIA ANTES DEL CAMBIO ---
+                Main.registrarElementoActivoMobil(categoria, obj);
 
-        // 1. Imagen grande e Identificador
+                Controller ctrlDetall = (Controller) UtilsViews.getController("MobileDetail");
+                if (ctrlDetall != null) {
+                    ctrlDetall.carregarDetallMobilFisic(obj);
+                }
+                UtilsViews.setView("MobileDetail");
+            });
+        }
+    }
+
+
+    public void carregarDetallMobilFisic(JSONObject obj) {
+        if (zonaDetallMobil == null || lblTitolDetallMobil == null) return;
+        lblTitolDetallMobil.setText(obj.optString("name", "Detall"));
+        carregarDetallEscriptori(obj, zonaDetallMobil);
+    }
+
+    private void carregarDetallEscriptori(JSONObject obj, VBox panelDestino) {
+        if (panelDestino == null || obj == null) return;
+        panelDestino.getChildren().clear();
+        panelDestino.setAlignment(Pos.CENTER);
+
         ImageView imgGran = obtenirImatge(obj.optString("image", ""), 180, false);
         Label nom = new Label(obj.optString("name", ""));
-        nom.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2C3E50; -fx-text-alignment: center;");
+        nom.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;");
 
-        // 2. Contenedor de datos específicos centrado
         VBox contenedorInfo = new VBox(10);
         contenedorInfo.setAlignment(Pos.CENTER);
 
-        // --- MAPEO DE PERSONAJES ---
         if (obj.has("game")) {
-            Label lblJuego = new Label("Joc Principal: " + obj.getString("game"));
-            lblJuego.setStyle("-fx-text-fill: #E67E22; -fx-font-weight: bold; -fx-font-size: 16px; -fx-text-alignment: center;");
-            contenedorInfo.getChildren().add(lblJuego);
+            Label lbl = new Label("Joc Principal: " + obj.getString("game"));
+            lbl.setStyle("-fx-text-fill: #E67E22; -fx-font-weight: bold; -fx-font-size: 16px;");
+            contenedorInfo.getChildren().add(lbl);
         }
-
-        // --- MAPEO DE VIDEOJUEGOS (Texto Adaptativo Dinámico) ---
         if (obj.has("type")) {
-            Label lblTipo = new Label("Gènere: " + obj.getString("type"));
-            lblTipo.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2980B9; -fx-text-alignment: center;");
-            contenedorInfo.getChildren().add(lblTipo);
+            Label lbl = new Label("Gènere: " + obj.getString("type"));
+            lbl.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2980B9;");
+            contenedorInfo.getChildren().add(lbl);
         }
         if (obj.has("year")) {
-            Label lblAny = new Label("Any de llançament: " + obj.get("year").toString());
-            lblAny.setStyle("-fx-font-size: 14px; -fx-text-fill: #7F8C8D; -fx-text-alignment: center;");
-            contenedorInfo.getChildren().add(lblAny);
+            contenedorInfo.getChildren().add(new Label("Any de llançament: " + obj.get("year").toString()));
         }
         if (obj.has("plot")) {
-            Label lblArgumento = new Label(obj.getString("plot"));
-            lblArgumento.setWrapText(true); // Permitimos saltos de línea automáticos
-            lblArgumento.setStyle("-fx-font-size: 14px; -fx-text-alignment: center; -fx-text-fill: #34495E;");
-            
-            // --- AQUÍ ESTÁ EL TRUCO ADAPTATIVO ---
-            // Vinculamos el ancho máximo del texto al ancho real del panel de detalles menos un margen de seguridad (60px)
-            lblArgumento.maxWidthProperty().bind(zonaDetall.widthProperty().subtract(60));
-            
-            contenedorInfo.getChildren().add(lblArgumento);
+            Label lbl = new Label(obj.getString("plot"));
+            lbl.setWrapText(true);
+            lbl.setMaxWidth(340);
+            lbl.setStyle("-fx-font-size: 14px; -fx-text-alignment: center; -fx-text-fill: #34495E;");
+            contenedorInfo.getChildren().add(lbl);
         }
-        
-        // --- MAPEO DE CONSOLAS ---
         if (obj.has("procesador")) {
-            Label lblProc = new Label("Procesador: " + obj.getString("procesador"));
-            lblProc.setStyle("-fx-font-size: 14px; -fx-text-fill: #7F8C8D; -fx-text-alignment: center;");
-            contenedorInfo.getChildren().add(lblProc);
+            contenedorInfo.getChildren().add(new Label("Procesador: " + obj.getString("procesador")));
         }
         if (obj.has("date")) {
-            Label lblFecha = new Label("Llançament: " + obj.getString("date"));
-            lblFecha.setStyle("-fx-font-size: 14px; -fx-text-fill: #7F8C8D; -fx-text-alignment: center;");
-            contenedorInfo.getChildren().add(lblFecha);
+            contenedorInfo.getChildren().add(new Label("Llançament: " + obj.getString("date")));
         }
         if (obj.has("units_sold")) {
-            long unidades = obj.optLong("units_sold", 0);
-            Label lblUnidades = new Label("Unitats venudes: " + String.format("%,d", unidades));
-            lblUnidades.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #27AE60; -fx-text-alignment: center;");
-            contenedorInfo.getChildren().add(lblUnidades);
+            Label lbl = new Label("Unitats venudes: " + String.format("%,d", obj.optLong("units_sold", 0)));
+            lbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #27AE60;");
+            contenedorInfo.getChildren().add(lbl);
         }
-
-        // --- FILA DINÁMICA DEL COLOR CON EL CUADRADO ---
         if (obj.has("color")) {
-            String colorTxt = obj.getString("color");
             HBox filaColor = new HBox(8);
             filaColor.setAlignment(Pos.CENTER);
-
-            javafx.scene.shape.Rectangle cuadradito = new javafx.scene.shape.Rectangle(14, 14);
-            cuadradito.setArcWidth(3);
-            cuadradito.setArcHeight(3);
-            cuadradito.setStyle("-fx-fill: " + colorTxt.toLowerCase() + "; -fx-stroke: #BDC3C7; -fx-stroke-width: 1px;");
-
-            Label lblColor = new Label("Color: " + colorTxt);
-            lblColor.setStyle("-fx-font-size: 14px; -fx-text-fill: #5D6D7E; -fx-font-style: italic;");
-
+            Rectangle cuadradito = new Rectangle(14, 14);
+            cuadradito.setArcWidth(3); cuadradito.setArcHeight(3);
+            cuadradito.setStyle("-fx-fill: " + obj.getString("color").toLowerCase() + "; -fx-stroke: #BDC3C7;");
+            Label lblColor = new Label("Color: " + obj.getString("color"));
+            lblColor.setStyle("-fx-font-style: italic; -fx-text-fill: #5D6D7E;");
             filaColor.getChildren().addAll(cuadradito, lblColor);
             contenedorInfo.getChildren().add(filaColor);
         }
 
-        zonaDetall.getChildren().addAll(imgGran, nom, contenedorInfo);
+        panelDestino.getChildren().addAll(imgGran, nom, contenedorInfo);
     }
-
-
-    public void actualitzarLlistaMobil(String categoria) {
-    if (llistaElements == null) return;
-    llistaElements.getItems().clear();
-
-    JSONArray array = obtenirArrayPerCategoria(categoria);
-    for (int i = 0; i < array.length(); i++) {
-        JSONObject obj = array.getJSONObject(i);
-        HBox fila = new HBox(15);
-        fila.setAlignment(Pos.CENTER_LEFT);
-        
-        // --- AQUÍ ESTÁ EL AJUSTE MÓVIL ---
-        // Añadimos relleno interior a la fila para que las celdas se vean proporcionales y limpias
-        fila.setPadding(new javafx.geometry.Insets(10, 15, 10, 15));
-
-        ImageView imgView = obtenirImatge(obj.optString("image", ""), 40, true);
-        Label nom = new Label(obj.optString("name", ""));
-        nom.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;");
-        
-        fila.getChildren().addAll(imgView, nom);
-        llistaElements.getItems().add(fila);
-    }
-}
 
     private ImageView obtenirImatge(String nomImatge, double mida, boolean quadrada) {
         ImageView iv = new ImageView();
@@ -240,12 +217,47 @@ public class Controller {
         if (nomImatge == null || nomImatge.isEmpty()) return iv;
         try {
             InputStream is = getClass().getResourceAsStream("/assets/images/" + nomImatge);
-            if (is != null) {
-                iv.setImage(new Image(is));
-            }
-        } catch (Exception e) {
-        // Silencioso
-        }
+            if (is != null) iv.setImage(new Image(is));
+        } catch (Exception e) { /* Silencioso */ }
         return iv;
     }
+
+        /**
+     * Permite saber qué elemento está seleccionado actualmente en la lista de escritorio
+     */
+    public JSONObject obtenirElementSeleccionatEscriptori() {
+        if (llistaLateral == null || selectorCategoria == null) return null;
+        int index = llistaLateral.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            JSONArray array = obtenirArrayPerCategoria(selectorCategoria.getValue());
+            return array.optJSONObject(index);
+        }
+        return null;
+    }
+
+    /**
+     * Permite saber qué categoría está activa en el ComboBox de escritorio
+     */
+    public String obtenirCategoriaActualEscriptori() {
+        return selectorCategoria != null ? selectorCategoria.getValue() : "Personatges";
+    }
+
+    /**
+     * Permite forzar la selección de un elemento concreto en la lista lateral
+     */
+    public void seleccionarElementEnEscriptori(String categoria, String nombreElemento) {
+        if (selectorCategoria == null || llistaLateral == null) return;
+        selectorCategoria.getSelectionModel().select(categoria);
+        actualitzarLlistaEscriptori(categoria);
+        
+        JSONArray array = obtenirArrayPerCategoria(categoria);
+        for (int i = 0; i < array.length(); i++) {
+            if (array.getJSONObject(i).optString("name", "").equals(nombreElemento)) {
+                llistaLateral.getSelectionModel().select(i);
+                carregarDetallEscriptori(array.getJSONObject(i), zonaDetall);
+                break;
+            }
+        }
+    }
+    
 }

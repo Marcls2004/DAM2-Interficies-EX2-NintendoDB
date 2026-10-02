@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="380.0" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="com.project.Controller">
+   <children>
+      <HBox alignment="CENTER" prefHeight="50.0" style="-fx-background-color: #EAECEE; -fx-border-color: #BDC3C7; -fx-border-width: 0 0 1px 0;">
+         <children>
+            <Label text="Nintendo DB" textFill="#2c3e50">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <!-- Esta lista contendrá las opciones fijas: Personatges, Jocs, Consoles -->
+      <ListView fx:id="llistaCategoriesMobil" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>
