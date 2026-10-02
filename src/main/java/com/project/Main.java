@@ -9,8 +9,6 @@ public class Main extends Application {
 
     final int WINDOW_WIDTH = 600;
     final int WINDOW_HEIGHT = 400;
-    
-    // Quitamos los límites mínimos estrictos para que te deje encoger la ventana a tamaño móvil
     final int MIN_WIDTH = 350; 
     final int MIN_HEIGHT = 500;
 
@@ -22,13 +20,17 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         this.stage = stage;
 
-        // Configuración inicial del contenedor de tu plantilla
+        // Configuración estética inicial de tu plantilla
         UtilsViews.parentContainer.setStyle("-fx-font: 14 arial;");
         
-        // Primera carga de la vista según el tamaño inicial
+        // PRECARGA OBLIGATORIA: Añadimos las dos vistas a la lista en memoria de tu plantilla
+        UtilsViews.addView(getClass(), "Desktop", "/assets/layout.fxml");
+        UtilsViews.addView(getClass(), "Mobile", "/assets/vista_mobil.fxml");
+
+        // Evaluamos el tamaño inicial de la pantalla para activar la vista correcta
         actualitzarVistaDinamica();
 
-        // Escuchador dinámico: Cambia entre móvil y escritorio en tiempo real al estirar la ventana
+        // Listener dinámico: Conmuta entre las pantallas precargadas al estirar la ventana
         stage.widthProperty().addListener((obs, oldVal, newVal) -> actualitzarVistaDinamica());
 
         Scene scene = new Scene(UtilsViews.parentContainer);
@@ -40,47 +42,28 @@ public class Main extends Application {
         stage.setHeight(WINDOW_HEIGHT);
         stage.show();
 
-        // Añade el icono si no es Mac
         if (!System.getProperty("os.name").contains("Mac")) {
             try {
                 Image icon = new Image("file:icons/icon.png");
                 stage.getIcons().add(icon);
             } catch (Exception e) {
-                System.out.println("No se pudo cargar el icono del sistema.");
+                System.out.println("No se pudo cargar el icono.");
             }
         }
     }
 
     /**
-     * Gestiona qué FXML inyectar en el contenedor compartido de tu plantilla
+     * Activa una vista u otra usando el sistema nativo de tu plantilla (setView)
      */
     private void actualitzarVistaDinamica() {
         double width = stage.getWidth();
-        String layoutNecesario;
+        String layoutNecesario = (Double.isNaN(width) || width < PRAGMA_WIDTH) ? "Mobile" : "Desktop";
 
-        if (Double.isNaN(width) || width < PRAGMA_WIDTH) {
-            layoutNecesario = "Mobile";
-        } else {
-            layoutNecesario = "Desktop";
-        }
-
-        // Evitamos recargar el archivo FXML cíclicamente si ya estamos en esa vista
         if (!vistaActual.equals(layoutNecesario)) {
             vistaActual = layoutNecesario;
-            try {
-                // Limpiamos las vistas previas del contenedor antes de meter la nueva
-                UtilsViews.parentContainer.getChildren().clear();
-
-                if (layoutNecesario.equals("Desktop")) {
-                    // Carga el archivo modificado layout.fxml (Escritorio)
-                    UtilsViews.addView(getClass(), "Desktop", "/assets/layout.fxml");
-                } else {
-                    // Carga tu vista_mobil.fxml
-                    UtilsViews.addView(getClass(), "Mobile", "/assets/vista_mobil.fxml");
-                }
-            } catch (Exception e) {
-                System.err.println("Error al conmutar vistas en UtilsViews: " + e.getMessage());
-            }
+            
+            // Usamos el método oficial de tu plantilla para cambiar de pantalla de forma segura
+            UtilsViews.setView(layoutNecesario);
         }
     }
 

@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.project.Controller">
+<BorderPane xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="com.project.Controller">
    <top>
-      <Label prefWidth="69.0" text="Nintendo DB" BorderPane.alignment="CENTER" />
+      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="40.0" style="-fx-background-color: #EAECEE;" text="Nintendo DB" textAlignment="CENTER" BorderPane.alignment="CENTER" />
    </top>
    <left>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox prefWidth="250.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <ComboBox fx:id="selectorCategoria" prefWidth="150.0" />
-            <ListView fx:id="llistaLateral" prefHeight="200.0" prefWidth="200.0" />
+            <ComboBox fx:id="selectorCategoria" maxWidth="1.7976931348623157E308" prefHeight="35.0" />
+            <ListView fx:id="llistaLateral" VBox.vgrow="ALWAYS" />
          </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
       </VBox>
    </left>
    <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+      <!-- Eliminados los tamaños fijos prefWidth/prefHeight para dar total flexibilidad elástica -->
+      <VBox fx:id="zonaDetall" alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+         </padding>
+      </VBox>
    </center>
 </BorderPane>
