@@ -1,11 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://apache.org" xmlns:xsi="http://w3.org"
+         xsi:schemaLocation="http://apache.org http://apache.org">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example</groupId>
     <artifactId>project-name</artifactId>
     <version>1.0.0</version>
+    
+    <properties>
+        <!-- ¡CORREGIDO AQUÍ! Cambiado com.example.Main por com.project.Main -->
+        <exec.mainClass>com.project.Main</exec.mainClass>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <build>
         <plugins>
+            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -22,6 +30,7 @@
             </plugin>
         </plugins>
     </build>
+
     <dependencies>
         <!-- Dependency for SQLite -->
         <dependency>
@@ -50,7 +59,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20220924</version> <!-- This seems to be a future date, please ensure it's the correct version -->
+            <version>20220924</version>
         </dependency>
         <!-- Dependencies for SLF4J -->
         <dependency>
@@ -64,6 +73,7 @@
             <version>2.0.3</version>
         </dependency>
     </dependencies>
+
     <profiles>
         <profile>
             <id>runMain</id>
@@ -74,7 +84,8 @@
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.6.0</version>
                         <configuration>
-                            <mainClass>${exec.mainClass}</mainClass>
+                            <!-- ¡CORREGIDO AQUÍ TAMBIÉN! -->
+                            <mainClass>com.project.Main</mainClass>
                         </configuration>
                     </plugin>
                 </plugins>
